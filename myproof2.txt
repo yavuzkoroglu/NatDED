@@ -1,0 +1,4 @@
+[p] p V q
+[p] ~q V r
+-gl p V r
+-pl

@@ -1,0 +1,51 @@
+DERIVE(goal) : 
+    IF (goal is p -> q)
+        ASSUME(p);
+        GOAL(q);
+        APPLY(implication introduction, p, q);
+        
+    ELSE IF (goal is p & q)
+        GOAL(p);
+        GOAL(q);
+        APPLY(conjunction introduction, p, q);
+        
+    ELSE IF (goal is p V q)
+        APPLY(law of excluded middle, p V ~p);
+        ASSUME(p);
+        APPLY(disjunction introduction, p, p V q);
+        ASSUME(~p);
+        DERIVE(q);
+        APPLY(disjunction introduction, q, p V q);
+        APPLY(disjunction elimination, pV~p, pVq);
+    
+    ELSE IF (goal is ~p)
+        ASSUME(p);
+        GOAL(FALSE);
+        APPLY(negation introduction, p, FALSE);
+    
+    ELSE IF (goal is p)
+        ASSUME(~p);
+        GOAL(FALSE);
+        APPLY(negation introduction, ~p, FALSE);
+        APPLY(dbl negation elimination, ~~p);
+
+    ELSE IF (goal is FALSE)
+        WHILE(TRUE)
+        {
+            IF (CONTAINS(proof, contradiction))
+            {
+                APPLY(negation elimination, contradiction, FALSE);
+                RETURN;
+            }
+            
+            ELIMINATE_dbl_negations();
+            ELIMINATE_negations();
+            SEPERATE_conjunctions();
+            CONVERT_disjunctions_to_implications();
+            ELIMINATE_implications();
+            
+            IF (!isCHANGED(proof))
+            {
+                STOP;
+            }
+        }
